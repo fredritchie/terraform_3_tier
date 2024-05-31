@@ -43,3 +43,16 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
 
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Get ALB DNS Name
+        run: |
+          echo "ALB_DNS_NAME=$(terraform output -json alb_dns_name | jq -r '.value')" >> $GITHUB_ENV
+          echo "Fetched ALB DNS Name: ${{ env.ALB_DNS_NAME }}"
+
+      - name: Update Website HTML
+        run: sed -i "s/YOUR_PLACEHOLDER_LINK/${{ env.ALB_DNS_NAME }}/g" your_website/index.html # Adjust the path to your index.html file
+
+      - name: Deploy Updated Website
+        run: aws s3 cp your_website s3://my-tf-hypha-ritchie-bucket  --recursive
