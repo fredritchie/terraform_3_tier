@@ -29,7 +29,7 @@ resource "aws_s3_bucket_acl" "static_website_bucket" {
 }
 
 
-data "aws_iam_policy_document" "allow_access_from_all_accounts" {
+data "aws_iam_policy_document" "allow_access_from_internet" {
   statement {
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.static_website_bucket.arn}/*"]
@@ -45,4 +45,8 @@ resource "aws_s3_bucket_website_configuration" "static_website_bucket" {
   index_document {
     suffix = "index.html"
   }
+}
+resource "aws_s3_bucket_policy" "allow_access_from_internet" {
+  bucket = aws_s3_bucket.static_website_bucket.id
+  policy = data.aws_iam_policy_document.allow_access_from_internet.json
 }
