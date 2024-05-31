@@ -54,7 +54,7 @@ jobs:
         run: sudo apt-get install -y gh
 
       - name: Authenticate GitHub CLI
-        run: gh auth login --with-token <<< ${{ secrets.GITHUB_TOKEN }}
+        run: gh auth login --with-token <<< ${{ secrets.TOKEN_GITHUB }}
 
       - name: Set ALB DNS Name Secret in Website Repo
         run: gh secret set ALB_DNS_NAME -b"${{ env.ALB_DNS_NAME }}" -R fredritchie/static_3_tier
