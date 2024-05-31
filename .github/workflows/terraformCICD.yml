@@ -47,12 +47,14 @@ jobs:
         run: sudo apt-get install -y jq
 
       - name: Get ALB DNS Name
-        run: |
-          echo "ALB_DNS_NAME=$(terraform output -json alb_dns_name | jq -r '.value')" >> $GITHUB_ENV
-          echo "Fetched ALB DNS Name: ${{ env.ALB_DNS_NAME }}"
+        id: get-alb-dns-name
+        run: echo "ALB_DNS_NAME=$(terraform output -json alb_dns_name | jq -r '.value')" >> $GITHUB_ENV
 
-      - name: Update Website HTML
-        run: sed -i "s/YOUR_PLACEHOLDER_LINK/${{ env.ALB_DNS_NAME }}/g" your_website/index.html # Adjust the path to your index.html file
+      - name: Install GitHub CLI
+        run: sudo apt-get install -y gh
 
-      - name: Deploy Updated Website
-        run: aws s3 cp your_website s3://my-tf-hypha-ritchie-bucket  --recursive
+      - name: Authenticate GitHub CLI
+        run: gh auth login --with-token <<< ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set ALB DNS Name Secret in Website Repo
+        run: gh secret set ALB_DNS_NAME -b"${{ env.ALB_DNS_NAME }}" -R fredritchie/static_3_tier
