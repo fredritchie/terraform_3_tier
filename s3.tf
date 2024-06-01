@@ -50,3 +50,6 @@ resource "aws_s3_bucket_policy" "allow_access_from_internet" {
   bucket = aws_s3_bucket.static_website_bucket.id
   policy = data.aws_iam_policy_document.allow_access_from_internet.json
 }
+resource "aws_s3_bucket" "hypha-build-and-push-bucket" {
+  bucket = var.build-bucker-name
+}
