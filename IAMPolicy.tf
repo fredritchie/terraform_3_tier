@@ -80,7 +80,8 @@ resource "aws_iam_policy" "policy_for_EC2" {
         "Effect": "Allow",
         "Action": ["s3:GetObject",
                    "s3:ListBucket"],
-        "Resource": "arn:aws:s3:::hypha-build-and-push-bucket/*" 
+        "Resource": ["arn:aws:s3:::hypha-build-and-push-bucket/*",
+                     "arn:aws:s3:::hypha-build-and-push-bucket"]
       },
       {
         "Effect" : "Allow",
