@@ -33,7 +33,7 @@ resource "aws_launch_template" "webapp-template" {
 
   vpc_security_group_ids = [aws_security_group.Ec2-SG.id]
   tags = {
-    Name = "webapp-template"
+    Name = "webapp-template_V1"
   }
   user_data = filebase64("user-data-script.sh")
 }
