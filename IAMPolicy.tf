@@ -78,7 +78,8 @@ resource "aws_iam_policy" "policy_for_EC2" {
       {
         "Sid": "AllowObjectDownload",
         "Effect": "Allow",
-        "Action": "s3:GetObject"
+        "Action": ["s3:GetObject",
+                   "s3:ListBucket"],
         "Resource": "arn:aws:s3:::hypha-build-and-push-bucket/*" 
       },
       {
