@@ -79,7 +79,7 @@ resource "aws_iam_policy" "policy_for_EC2" {
         "Sid": "AllowObjectDownload",
         "Effect": "Allow",
         "Action": "s3:GetObject"
-        "Resource": "arn:aws:s3:::my-tf-hypha-ritchie-bucket/*" 
+        "Resource": "arn:aws:s3:::hypha-build-and-push-bucket/*" 
       },
       {
         "Effect" : "Allow",
