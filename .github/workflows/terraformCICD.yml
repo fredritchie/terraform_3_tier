@@ -1,11 +1,11 @@
-# .github/workflows/terraform-cicd.yml
-
 name: Terraform CI/CD
 
 on:
   push:
     branches:
       - main  # Or your desired deployment branch
+    paths:
+      - 'Terraform/**'  # Trigger only on changes to the Terraform folder
 
 permissions:
   id-token: write
@@ -33,12 +33,50 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
+      - name: Install AWS CLI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y awscli
+
+      - name: Delete Existing IAM Policy for EC2
+        run: |
+          POLICY_NAME="invoke_lambda_function_and_get_s3_object"
+          POLICY_ARN=$(aws iam list-policies --query 'Policies[?PolicyName==`'$POLICY_NAME'`].Arn' --output text)
+          if [ -n "$POLICY_ARN" ]; then
+            aws iam delete-policy --policy-arn $POLICY_ARN
+          else
+            echo "IAM Policy $POLICY_NAME does not exist."
+          fi
+
+      - name: Delete Existing IAM Policy for CodeDeploy
+        run: |
+          POLICY_NAME="Policy_for_codeDeploy_EC2"
+          POLICY_ARN=$(aws iam list-policies --query 'Policies[?PolicyName==`'$POLICY_NAME'`].Arn' --output text)
+          if [ -n "$POLICY_ARN" ]; then
+            aws iam delete-policy --policy-arn $POLICY_ARN
+          else
+            echo "IAM Policy $POLICY_NAME does not exist."
+          fi
+
+      - name: Delete Existing IAM Role for CodeDeploy
+        run: |
+          ROLE_NAME="Policy_for_codeDeploy_EC2-role"
+          aws iam delete-role --role-name $ROLE_NAME || echo "IAM Role $ROLE_NAME does not exist."
+
+      - name: Delete Existing CodeDeploy Application
+        run: |
+          APP_NAME="webapp"
+          aws deploy delete-application --application-name $APP_NAME || echo "CodeDeploy Application $APP_NAME does not exist."
+
       - name: Terraform Init
+        working-directory: Terraform  # Navigate to the Terraform folder
         run: terraform init
 
       - name: Terraform Plan
+        working-directory: Terraform
         run: terraform plan
         continue-on-error: true # If you want to continue even if the plan fails (for logging purposes)
 
       - name: Terraform Apply
+        working-directory: Terraform
         run: terraform apply -auto-approve
