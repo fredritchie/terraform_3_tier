@@ -45,4 +45,3 @@ resource "aws_autoscaling_group" "webapp_asg" {
     version = "$Latest"
   }
 }
-#2
